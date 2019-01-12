@@ -26,24 +26,19 @@ from time import sleep
 
 marketKey = 221
 timeDelay = 0.2
-exit=False
 
-def global_handler(sig, frame):
-    global exit
-    if sig == SIGINT:
-        exit = True
-
-def home():
-    global exit
+def home(exitFlag):
+    print("[%d] Home : Init" % getpid())
 
     CR = int(130*random())
     PR = int(70*random())
     ETP = int(3*random())
-    print("[%d] Home : Init, CR = %d\tPR = %d\tETP = %d" % (getpid(), CR, PR, ETP))
+    print("[%d] Home : CR = %d\tPR = %d\tETP = %d" % (getpid(), CR, PR, ETP))
+
     queueToMarket = MessageQueue(marketKey)
     print("[%d] Home : connected to messageQueue" % getpid())
 
-    while not exit:
+    while not exitFlag.value:
         sleep(2)
 
         # besoin d'énergie: il en cherche auprès des maisons, sinon il achète au marché
@@ -95,14 +90,22 @@ def home():
         else:
             print("[%d] Home : i'm autonomous !" % getpid())
 
+    print("[%d] Home : Exit" % getpid())
 
 
 if __name__ == '__main__':
     print("[%d] Main process : Init" % getpid())
     signal(SIGINT, global_handler)
 
-    # we must implement a shared-variable
-    homeProcess = Process(target=home)
+    # proper exit system : shared-variable exitFlag between processes
+    # and we use a closure to pass exitFlag to global_handler
+    exitFlag = Value('i', 0)
+    def global_handler(sig, frame):
+        if sig == SIGINT:
+            exitFlag.value = 1
+    signal(SIGINT, global_handler)
+
+    homeProcess = Process(target=home, args=(exitFlag,))
     homeProcess.start()
 
-    print("[%d] Main process : Done" % getpid())
+    print("[%d] Main process : Exit" % getpid())
