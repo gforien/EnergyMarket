@@ -17,8 +17,8 @@ ETP est déterminé aléatoirement entre 0, 1 et 2 :
     2 -> essaye de donner l'énergie, sinon il la vend au marché (libéral)
 """
 
-from multiprocessing import Process
-from sysv_ipc import IPC_CREAT, MessageQueue, NotAttachedError, BusyError
+from multiprocessing import Process, Value
+from sysv_ipc import IPC_CREAT, MessageQueue, NotAttachedError, BusyError, ExistentialError
 from os import getpid
 from signal import signal, SIGINT
 from random import random
@@ -35,8 +35,12 @@ def home(exitFlag):
     ETP = int(3*random())
     print("[%d] Home : CR = %d\tPR = %d\tETP = %d" % (getpid(), CR, PR, ETP))
 
-    queueToMarket = MessageQueue(marketKey)
-    print("[%d] Home : connected to messageQueue" % getpid())
+    try:
+        queueToMarket = MessageQueue(marketKey)
+        print("[%d] Home : connected to messageQueue" % getpid())
+    except ExistentialError:
+        print("[%d] Home : can't connect to messageQueue, try launching Market before Home" % getpid())
+        exitFlag.value = 1
 
     while not exitFlag.value:
         sleep(2)
@@ -58,6 +62,8 @@ def home(exitFlag):
                     print("[%d] Home : ACK sent to %s" % (getpid(), pid))
                 except (NotAttachedError, BusyError):
                     break
+                except ExistentialError:
+                    exitFlag.value = 1
             if energyNeeded>0:
                 message = str(getpid())+':'+str(energyNeeded)
                 queueToMarket.send(message.encode(), type=1)
@@ -95,7 +101,6 @@ def home(exitFlag):
 
 if __name__ == '__main__':
     print("[%d] Main process : Init" % getpid())
-    signal(SIGINT, global_handler)
 
     # proper exit system : shared-variable exitFlag between processes
     # and we use a closure to pass exitFlag to global_handler
