@@ -10,6 +10,7 @@ from random import random
 from time import sleep
 from queue import Queue, Empty
 from threading import Thread, current_thread
+from tkinter import Tk, Canvas
 
 marketKey = 221
 
@@ -144,3 +145,11 @@ if __name__ == '__main__':
     marketProcess.start()
     weatherProcess.start()
     print("[%d] Main process : Exit" % getpid())
+
+    fenetre = Tk()
+    fenetre.title('Market.py')
+    canvas = Canvas(fenetre, width=800, height=800, background='light gray')
+    ligne1 = canvas.create_line(75, 0, 75, 120)
+    ligne2 = canvas.create_line(0, 60, 150, 60)
+    canvas.pack()
+    fenetre.mainloop()
