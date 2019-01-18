@@ -23,16 +23,14 @@ from os import getpid
 from signal import signal, SIGINT
 from random import random
 from time import sleep
+from sys import argv
 
 marketKey = 221
+period = 2
 timeDelay = 0.2
 
-def home(exitFlag):
+def home(exitFlag, CR=int(130*random()), PR=int(70*random()),  ETP=int(3*random())):
     print("[%d] Home : Init" % getpid())
-
-    CR = int(130*random())
-    PR = int(70*random())
-    ETP = int(3*random())
     print("[%d] Home : CR = %d\tPR = %d\tETP = %d" % (getpid(), CR, PR, ETP))
 
     try:
@@ -43,7 +41,7 @@ def home(exitFlag):
         exitFlag.value = 1
 
     while not exitFlag.value:
-        sleep(2)
+        sleep(period)
 
         # besoin d'énergie: il en cherche auprès des maisons, sinon il achète au marché
         if CR>PR:
@@ -62,8 +60,6 @@ def home(exitFlag):
                     print("[%d] Home : ACK sent to %s" % (getpid(), pid))
                 except (NotAttachedError, BusyError):
                     break
-                except ExistentialError:
-                    exitFlag.value = 1
             if energyNeeded>0:
                 message = str(getpid())+':'+str(energyNeeded)
                 queueToMarket.send(message.encode(), type=1)
@@ -89,6 +85,7 @@ def home(exitFlag):
                     print("[%d] Home : gave %d of energy, waiting for response" % (getpid(), energyBonus))
                     sleep(2*timeDelay)
                     message, t = queueToMarket.receive(block=False, type=getpid())
+                    print("[%d] Home : response received" % getpid() )
                 except (NotAttachedError, BusyError):
                     message = str(getpid())+':'+str(energyBonus)
                     queueToMarket.send(message.encode(), type=2)
@@ -110,7 +107,12 @@ if __name__ == '__main__':
             exitFlag.value = 1
     signal(SIGINT, global_handler)
 
-    homeProcess = Process(target=home, args=(exitFlag,))
+    for i in range(len(argv)):
+        try:
+            argv[i] = int(argv[i])
+        except ValueError:
+            pass
+    homeProcess = Process(target=home, args=(exitFlag, *argv[1:4]))
     homeProcess.start()
 
     print("[%d] Main process : Exit" % getpid())
