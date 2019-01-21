@@ -14,7 +14,7 @@ from time import sleep
 from queue import Queue, Empty
 
 marketKey = 221
-period = 2
+period = 1
 
 def weather(weatherAttributes, exitFlag):
     print("[%d] Weather : Init" % getpid())
@@ -126,37 +126,21 @@ def market(weatherAttributes, prices, exitFlag):
 
 
 offset = 0
-limit = 0
-MAX_LIMIT = 20
 def gui(prices):
-    fig = plt.figure()
-    axe = plt.axes(xlim=(0, 20), ylim=(-1,100))
-    plt.xlabel("Time (in days)")
-    plt.ylabel("Price (in €/kWh)")
-    line, = axe.plot([], [], lw=2)
+    global offset
+    plt.ion()
+    fig, plot = plt.subplots()
+    #axe = plt.axes(xlim=(0, 20), ylim=(-1,100))
+    plot.set_xlabel("Time (in days)")
+    plot.set_ylabel("Price (in €/kWh)")
+    plot.set_xlim((0,50))
 
-# initialization function: plot the background of each frame
-    def gui_init():
-        global offset, limit
-        line.set_data([], [])
-        return line,
-
-# animation function.  This is called sequentially
-    def gui_animate(i):
-        global offset, limit
-        while prices[limit] != -1 and limit < MAX_LIMIT:
-            limit+=1
-        print("In gui : "+str(prices[offset:limit]))
-        line.set_data(range(limit), prices[offset:limit])
-        if limit == MAX_LIMIT:
-            offset = (offset+1)%500
-            limit = (limit+1)%500
-            axe.set_xlim(offset, limit)
-        return line,
-
-    # call the animator.  blit=True means only re-draw the parts that have changed.
-    anim = animation.FuncAnimation(fig, gui_animate, init_func=gui_init, frames=1, interval=period*1000, blit=True)
-    plt.show()
+    while True:
+        #print(prices[:offset])
+        plot.plot(prices[:offset])
+        plt.pause(period)
+        plt.show()
+        offset = (offset+1)%500
 
 if __name__ == '__main__':
     print("[%d] Main process : Init" % getpid())
