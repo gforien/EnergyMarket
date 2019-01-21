@@ -130,10 +130,9 @@ def gui(prices):
     global offset
     plt.ion()
     fig, plot = plt.subplots()
-    #axe = plt.axes(xlim=(0, 20), ylim=(-1,100))
     plot.set_xlabel("Time (in days)")
     plot.set_ylabel("Price (in €/kWh)")
-    plot.set_xlim((0,50))
+    #plot.set_xlim((0,50))
 
     while True:
         #print(prices[:offset])
@@ -164,12 +163,3 @@ if __name__ == '__main__':
 
     gui(prices)
     print("[%d] Main process : Exit" % getpid())
-
-    # GUI
-    #fenetre = Tk()
-    #fenetre.title('Market.py')
-    #canvas = Canvas(fenetre, width=800, height=800, background='light gray')
-    #ligne1 = canvas.create_line(75, 0, 75, 120)
-    #ligne2 = canvas.create_line(0, 60, 150, 60)
-    #canvas.pack()
-    #fenetre.mainloop()

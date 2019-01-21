@@ -1,15 +1,4 @@
 """Home.py
-Protocole de communication choisi : on envoie dans des messageQueue des messages au format "PID:quantitéDEnergie" avec un type pour spécifier l'action attendue.
-    type=1 -> BUY au marché, donc seul le marché fait des receive(type=1)
-    type=2 -> SELL au marche, donc seul le marché fait des receive(type=2)
-    type=3 -> GIVE aux autres Homes, seules les Homes en besoin d'énergie font des receive(type=3)
-    type=PID -> RECEIVED à la home concernée, donc seule une Home qui vient de donner de l'énergie fait un receive(type=getpid())
-
-La bonne communication est assurée par un délai d'attente dt = 0.2s par exemple : 
-    à t = 0, les homes ayant trop d'énergie la donnent (GIVE)
-    à t = dt, les Homes ayant besoin d'énergie écoutent sur la messageQueue. S'il n'y a pas de message, elles ne bloquent pas
-              S'il y a un message, elle prennent l'énergie et notifient la Home émettrice (RECEIVED)
-    à t = 2*dt, les Homes qui ont donné de l'énergie écoutent sur la messageQueue. S'il n'y a pas de message, elles ne bloquent pas et vendent au marché (SELL)
 
 ETP est déterminé aléatoirement entre 0, 1 et 2 :
     0 -> toujours donner l'énergie (communiste)
