@@ -114,6 +114,7 @@ def market(weatherAttributes, prices, exitFlag):
             price = 0.05
         prices[idx] = price
         idx = (idx+1)%500
+        #print("In market : "+str(prices[0:20]))
         print("[%d] Energy price = %.2f €/kWh" % (getpid(), price))
         externalEvents = [0, 0]
         buying = []
@@ -125,10 +126,11 @@ def market(weatherAttributes, prices, exitFlag):
 
 
 offset = 0
-limit = 20
+limit = 0
+MAX_LIMIT = 20
 def gui(prices):
     fig = plt.figure()
-    axe = plt.axes(xlim=(0, 20))
+    axe = plt.axes(xlim=(0, 20), ylim=(-1,100))
     plt.xlabel("Time (in days)")
     plt.ylabel("Price (in €/kWh)")
     line, = axe.plot([], [], lw=2)
@@ -136,16 +138,20 @@ def gui(prices):
 # initialization function: plot the background of each frame
     def gui_init():
         global offset, limit
-        line.set_data(range(20), prices[offset:limit])
+        line.set_data([], [])
         return line,
 
 # animation function.  This is called sequentially
     def gui_animate(i):
         global offset, limit
-        offset = (offset+1)%500
-        limit = (limit+1)%500
-        print(prices[offset:limit])
-        line.set_data(range(20), prices[offset:limit])
+        while prices[limit] != -1 and limit < MAX_LIMIT:
+            limit+=1
+        print("In gui : "+str(prices[offset:limit]))
+        line.set_data(range(limit), prices[offset:limit])
+        if limit == MAX_LIMIT:
+            offset = (offset+1)%500
+            limit = (limit+1)%500
+            axe.set_xlim(offset, limit)
         return line,
 
     # call the animator.  blit=True means only re-draw the parts that have changed.
@@ -156,7 +162,7 @@ if __name__ == '__main__':
     print("[%d] Main process : Init" % getpid())
     # creating shared memory
     weatherAttributes = Array('d', range(2))
-    prices = Array('f', [k for k in range(500)])
+    prices = Array('f', [-1 for k in range(500)])
 
     # proper exit system : shared-variable exitFlag between processes
     # and we use a closure to pass exitFlag to global_handler
