@@ -1,4 +1,5 @@
 # EnergyMarket :zap::dollar::chart_with_upwards_trend:
+## Simulation multi-processus avec communication inter-processus en Python
 
 ![Screenshot](screenshot.png)
 
