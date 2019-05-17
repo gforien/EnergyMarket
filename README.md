@@ -1,5 +1,5 @@
 # EnergyMarket :zap::dollar::chart_with_upwards_trend:
-## Simulation multi-processus avec communication inter-processus en Python
+### Simulation multi-processus avec communication inter-processus en Python
 
 ![Screenshot](screenshot.png)
 
@@ -18,7 +18,7 @@ Ensuite, on lance un terminal pour chaque Home.
 Les paramètres CR (*Consumption Rate*), PR (*Production Rate*), et ETP (*Energy Trade Policy*) sont tous optionnels mais doivent être spécifiés dans cet ordre. Dans chaque terminal, on exécutera par exemple:
 
     $ cd energymarket
-    $ CR=160; PR=80; ETP=0                      # par exe   mple
+    $ CR=160; PR=80; ETP=0                      # choix des paramètres
     $ python3 Home.py                           # Home complètement aléatoire
     $ python3 Home.py $CR                       # ou Home avec 1 paramètre déterminé
     $ python3 Home.py $CR $PR                   # ou Home avec 2 paramètres déterminés
