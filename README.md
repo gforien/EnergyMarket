@@ -1,6 +1,8 @@
-# EnergyMarket (Python)
+# EnergyMarket :zap::dollar::chart_with_upwards_trend:
 
-## Exécuter le projet
+![Screenshot](screenshot.png)
+
+## :construction_worker_man: Lancer le projet avec Python3
 On lance Market dans le terminal principal:
 
     $ git clone https://github.com/gforien/energymarket
@@ -15,13 +17,13 @@ Ensuite, on lance un terminal pour chaque Home.
 Les paramètres CR (*Consumption Rate*), PR (*Production Rate*), et ETP (*Energy Trade Policy*) sont tous optionnels mais doivent être spécifiés dans cet ordre. Dans chaque terminal, on exécutera par exemple:
 
     $ cd energymarket
-    $ CR=160; PR=80; ETP=0                      # par exemple
+    $ CR=160; PR=80; ETP=0                      # par exe   mple
     $ python3 Home.py                           # Home complètement aléatoire
     $ python3 Home.py $CR                       # ou Home avec 1 paramètre déterminé
     $ python3 Home.py $CR $PR                   # ou Home avec 2 paramètres déterminés
     $ python3 Home.py $CR $PR $ETP              # ou Home avec 3 paramètres déterminés
 
-## Protocole de communication choisi
+## :mailbox_with_mail: Protocole de communication interprocessus
 On envoie dans des messageQueue des messages au format "PID:quantitéDEnergie" avec un type pour spécifier l'action attendue.
 - `type=1` -> **BUY** au marché, donc seul le marché fait des `receive(type=1)`
 - `type=2` -> **SELL** au marche, donc seul le marché fait des `receive(type=2)`
